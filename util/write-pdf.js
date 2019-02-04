@@ -19,7 +19,7 @@ const getPdfFilePath = require('./get-pdf-file-path');
  * pdf's filename
  */
 module.exports = async (mdFilePath, html, config) => {
-	const pdfFilePath = config.dest || getPdfFilePath(mdFilePath);
+	const pdfFilePath = config.toBuffer ? null : config.dest || getPdfFilePath(mdFilePath);
 
 	const browser = await puppeteer.launch({ devtools: config.devtools, ...config.launch_options });
 
@@ -46,14 +46,16 @@ module.exports = async (mdFilePath, html, config) => {
 		waitUntilEmpty(requests);
 	});
 
+	let pdfBuffer = null;
+
 	if (config.devtools) {
 		await new Promise(resolve => page.on('close', resolve));
 	} else {
 		await page.emulateMedia('screen');
-		await page.pdf({ path: pdfFilePath, ...config.pdf_options });
+		pdfBuffer = await page.pdf({ path: pdfFilePath, ...config.pdf_options });
 	}
 
 	browser.close();
 
-	return config.devtools ? {} : { filename: pdfFilePath };
+	return config.devtools ? {} : { filename: pdfFilePath, buffer: pdfBuffer };
 };

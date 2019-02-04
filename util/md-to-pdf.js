@@ -67,7 +67,7 @@ module.exports = async (mdFile, config, port, args = {}) => {
 
 	const pdf = await writePdf(mdFile, html, { ...config, port });
 
-	if (!pdf.filename) {
+	if (!pdf.filename || !pdf.buffer) {
 		throw new Error(`Failed to create PDF`);
 	}
 

@@ -19,7 +19,7 @@ module.exports = async (mdFile, config) => {
 	}
 
 	const port = await getPort();
-	const server = await serveDirectory(getDir(mdFile), port);
+	const server = await serveDirectory(mdFile.length < 255 ? getDir(mdFile) : __dirname, port);
 
 	config = { ...defaultConfig, ...config, pdf_options: { ...defaultConfig.pdf_options, ...config.pdf_options } };
 
